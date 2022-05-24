@@ -51,7 +51,7 @@ func main() {
 }
 
 func handleShutdown(
-    _server *service.Server,
+    _server *server.Server,
     logger *logging.Logger,
 ) {
     done := make(chan os.Signal, 1)
