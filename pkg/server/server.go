@@ -46,7 +46,9 @@ func NewServer(config *ServerConfig) *Server {
 
 	// Serve both the gRPC server and the http/json proxy on the same port
 	httpServer := &http.Server{
-		Handler: h2c.NewHandler(config.HttpAndGrpcHandlerFunc(grpcMux, grpcServer), &http2.Server{}),
+		Handler: h2c.NewHandler(
+			config.HttpAndGrpcHandlerFunc(grpcMux, grpcServer), &http2.Server{},
+		),
 	}
 
 	return &Server{
