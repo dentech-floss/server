@@ -35,8 +35,8 @@ func main() {
     _server := server.NewServer(
         &server.ServerConfig{
             Port: config.Port,
-            // The "DefaultHttpAndGrpcHandlerFunc" will be used if you don't set this
-            // HttpAndGrpcHandlerFunc: server.CorsHttpAndGrpcHandlerFunc
+            // The "server.DefaultHttpAndGrpcHandlerFunc" will be used if you don't set this
+            // HttpAndGrpcHandlerFunc: server.CorsHttpAndGrpcHandlerFunc // ...to use the cors thingy...
         },
     )
 
