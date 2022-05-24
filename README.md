@@ -32,7 +32,7 @@ func main() {
 
     ...
 
-    _server := server.NewServer(
+    server := server.NewServer(
         &server.ServerConfig{
             Port: config.Port,
             // The "server.DefaultHttpAndGrpcHandlerFunc" will be used if you don't set this
@@ -40,14 +40,14 @@ func main() {
         },
     )
 
-    appointmentServiceV1.Register(_server.GrpcServer)
-    appointmentServiceV1.RegisterMux(ctx, _server.GrpcMux) // if you use the grpc gateway
+    appointmentServiceV1.Register(server.GrpcServer)
+    appointmentServiceV1.RegisterMux(ctx, server.GrpcMux) // if you use the grpc gateway
 
-    patientGatewayServiceV1.Register(_server.GrpcServer)
-    patientGatewayServiceV1.RegisterMux(ctx, _server.GrpcMux)
+    patientGatewayServiceV1.Register(server.GrpcServer)
+    patientGatewayServiceV1.RegisterMux(ctx, server.GrpcMux)
 
-    go _server.Serve()
-    handleShutdown(_server, logger)
+    go server.Serve()
+    handleShutdown(server, logger)
 }
 
 func handleShutdown(
