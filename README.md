@@ -36,7 +36,7 @@ func main() {
         &server.ServerConfig{
             Port: config.Port,
             // The "server.DefaultHttpAndGrpcHandlerFunc" will be used if you don't set this
-            // HttpAndGrpcHandlerFunc: server.CorsHttpAndGrpcHandlerFunc // ...to use the cors thingy...
+            // HttpAndGrpcHandlerFunc: server.CorsHttpAndGrpcHandlerFunc // ...for cors...
         },
     )
 
