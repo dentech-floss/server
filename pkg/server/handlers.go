@@ -30,6 +30,6 @@ func CorsHttpAndGrpcHandlerFunc(httpHandler http.Handler, grpcHandler http.Handl
 			return // respond to preflight requests with the above cors settings
 		}
 
-		DefaultHttpAndGrpcHandlerFunc(httpHandler, grpcHandler)
+		DefaultHttpAndGrpcHandlerFunc(httpHandler, grpcHandler).ServeHTTP(w, r)
 	})
 }
