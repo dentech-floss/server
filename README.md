@@ -51,7 +51,7 @@ func main() {
 }
 
 func handleShutdown(
-    _server *server.Server,
+    server *server.Server,
     logger *logging.Logger,
 ) {
     done := make(chan os.Signal, 1)
@@ -61,7 +61,7 @@ func handleShutdown(
 
     ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
     defer cancel()
-    if err := _server.Shutdown(ctx); err != nil {
+    if err := server.Shutdown(ctx); err != nil {
         logger.Warn("Server shutdown failed: " + err.Error())
     }
 }
