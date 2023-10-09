@@ -22,7 +22,9 @@ func CorsHttpAndGrpcHandlerFunc(httpHandler http.Handler, grpcHandler http.Handl
 
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, x-user-agent, x-grpc-web, grpc-status, grpc-message, api-token")
+		w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, "+
+			"Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, x-user-agent, "+
+			"x-grpc-web, grpc-status, grpc-message, api-token, X-Auth-Token")
 		w.Header().Set("Access-Control-Expose-Headers", "Content-Length, Content-Range, grpc-status, grpc-message")
 		w.Header().Set("Access-Control-Max-Age", "1728000")
 
