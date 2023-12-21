@@ -31,6 +31,23 @@ func CorsHttpAndGrpcHandlerFunc(
 	grpcHandler http.Handler,
 	options *HttpAndGrpcHandlerOptions,
 ) http.Handler {
+	allowedHeaders := []string{
+		"Accept",
+		"Content-Type",
+		"Content-Length",
+		"Accept-Encoding",
+		"X-CSRF-Token",
+		"Authorization",
+		"X-User-Agent",
+		"X-Grpc-Web",
+		"Gprc-Status",
+		"Gprc-Message",
+		"Api-Token",
+		"X-Auth-Token",
+	}
+	if options != nil && options.AdditionalAllowedHeaders != nil {
+		allowedHeaders = append(allowedHeaders, options.AdditionalAllowedHeaders...)
+	}
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if options == nil || options.GetOrigin == nil {
 			w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -39,9 +56,7 @@ func CorsHttpAndGrpcHandlerFunc(
 			w.Header().Set("Access-Control-Allow-Credentials", "true")
 		}
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, "+
-			"Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, x-user-agent, "+
-			"x-grpc-web, grpc-status, grpc-message, api-token, X-Auth-Token")
+		w.Header().Set("Access-Control-Allow-Headers", strings.Join(allowedHeaders, ", "))
 		w.Header().
 			Set("Access-Control-Expose-Headers", "Content-Length, Content-Range, grpc-status, grpc-message")
 		w.Header().Set("Access-Control-Max-Age", "1728000")
