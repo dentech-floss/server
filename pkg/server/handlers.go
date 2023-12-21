@@ -32,10 +32,10 @@ func CorsHttpAndGrpcHandlerFunc(
 	options *HttpAndGrpcHandlerOptions,
 ) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if options == nil {
+		if options == nil || options.GetOrigin == nil {
 			w.Header().Set("Access-Control-Allow-Origin", "*")
 		} else {
-			w.Header().Set("Access-Control-Allow-Origin", getOrigin(r, options.AllowedOrigins))
+			w.Header().Set("Access-Control-Allow-Origin", options.GetOrigin(r))
 		}
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, "+
@@ -51,17 +51,4 @@ func CorsHttpAndGrpcHandlerFunc(
 
 		DefaultHttpAndGrpcHandlerFunc(httpHandler, grpcHandler, options).ServeHTTP(w, r)
 	})
-}
-
-func getOrigin(r *http.Request, allowedOrigins []string) string {
-	if len(allowedOrigins) == 0 {
-		return "*"
-	}
-	origin := r.Header.Get("Origin")
-	for _, allowedOrigin := range allowedOrigins {
-		if origin == allowedOrigin {
-			return origin
-		}
-	}
-	return ""
 }

@@ -17,7 +17,7 @@ import (
 )
 
 type HttpAndGrpcHandlerOptions struct {
-	AllowedOrigins []string
+	GetOrigin func(r *http.Request) string
 }
 
 type ServerConfig struct {
