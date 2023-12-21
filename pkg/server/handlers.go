@@ -36,6 +36,7 @@ func CorsHttpAndGrpcHandlerFunc(
 			w.Header().Set("Access-Control-Allow-Origin", "*")
 		} else {
 			w.Header().Set("Access-Control-Allow-Origin", options.GetOrigin(r))
+			w.Header().Set("Access-Control-Allow-Credentials", "true")
 		}
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, "+
