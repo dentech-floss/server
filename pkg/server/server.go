@@ -16,9 +16,14 @@ import (
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 )
 
+type HttpAndGrpcHandlerOptions struct {
+	AllowedOrigin []string
+}
+
 type ServerConfig struct {
 	Port                   int
 	HttpAndGrpcHandlerFunc HttpAndGrpcHandlerFunc
+	HandlerOptions         *HttpAndGrpcHandlerOptions
 }
 
 func (c *ServerConfig) setDefaults() {
@@ -47,7 +52,12 @@ func NewServer(config *ServerConfig) *Server {
 	// Serve both the gRPC server and the http/json proxy on the same port
 	httpServer := &http.Server{
 		Handler: h2c.NewHandler(
-			config.HttpAndGrpcHandlerFunc(grpcMux, grpcServer), &http2.Server{},
+			config.HttpAndGrpcHandlerFunc(
+				grpcMux,
+				grpcServer,
+				config.HandlerOptions,
+			),
+			&http2.Server{},
 		),
 	}
 
