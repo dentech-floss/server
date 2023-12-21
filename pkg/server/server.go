@@ -17,7 +17,7 @@ import (
 )
 
 type HttpAndGrpcHandlerOptions struct {
-	AllowedOrigin []string
+	AllowedOrigins []string
 }
 
 type ServerConfig struct {
