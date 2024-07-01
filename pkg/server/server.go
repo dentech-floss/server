@@ -47,7 +47,9 @@ func NewServer(config *ServerConfig) *Server {
 
 	grpcMux := runtime.NewServeMux(runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{
 		MarshalOptions: protojson.MarshalOptions{
-			EmitUnpopulated: config.JsonEmitUnpopulated,
+			EmitUnpopulated:   config.JsonEmitUnpopulated,
+			EmitDefaultValues: config.JsonEmitUnpopulated,
+			UseProtoNames:     true,
 		},
 		UnmarshalOptions: protojson.UnmarshalOptions{
 			DiscardUnknown: true,
