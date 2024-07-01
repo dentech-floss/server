@@ -14,9 +14,12 @@ type HttpAndGrpcHandlerFunc func(
 func DefaultHttpAndGrpcHandlerFunc(
 	httpHandler http.Handler,
 	grpcHandler http.Handler,
-	options *HttpAndGrpcHandlerOptions,
+	_ *HttpAndGrpcHandlerOptions,
 ) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return http.HandlerFunc(func(
+		w http.ResponseWriter,
+		r *http.Request,
+	) {
 		if r.ProtoMajor == 2 &&
 			strings.HasPrefix(r.Header.Get("content-type"), "application/grpc") {
 			grpcHandler.ServeHTTP(w, r)
@@ -49,7 +52,10 @@ func CorsHttpAndGrpcHandlerFunc(
 	if options != nil && options.AdditionalAllowedHeaders != nil {
 		allowedHeaders = append(allowedHeaders, options.AdditionalAllowedHeaders...)
 	}
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return http.HandlerFunc(func(
+		w http.ResponseWriter,
+		r *http.Request,
+	) {
 		if options == nil || options.GetOrigin == nil {
 			w.Header().Set("Access-Control-Allow-Origin", "*")
 		} else {

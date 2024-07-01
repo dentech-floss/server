@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"errors"
+	"google.golang.org/protobuf/encoding/protojson"
 	"net"
 	"net/http"
 	"strconv"
@@ -25,6 +26,7 @@ type ServerConfig struct {
 	Port                   int
 	HttpAndGrpcHandlerFunc HttpAndGrpcHandlerFunc
 	HandlerOptions         *HttpAndGrpcHandlerOptions
+	JsonEmitUnpopulated    bool
 }
 
 func (c *ServerConfig) setDefaults() {
@@ -43,7 +45,11 @@ type Server struct {
 func NewServer(config *ServerConfig) *Server {
 	config.setDefaults()
 
-	grpcMux := runtime.NewServeMux() // grpc-gateway
+	grpcMux := runtime.NewServeMux(runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{
+		MarshalOptions: protojson.MarshalOptions{
+			EmitUnpopulated: config.JsonEmitUnpopulated,
+		},
+	})) // grpc-gateway
 
 	grpcServer := grpc.NewServer(
 		grpc.UnaryInterceptor(otelgrpc.UnaryServerInterceptor()),   // instrumentation
