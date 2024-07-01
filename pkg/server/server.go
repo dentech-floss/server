@@ -49,11 +49,13 @@ func NewServer(config *ServerConfig) *Server {
 		MarshalOptions: protojson.MarshalOptions{
 			EmitUnpopulated: config.JsonEmitUnpopulated,
 		},
+		UnmarshalOptions: protojson.UnmarshalOptions{
+			DiscardUnknown: true,
+		},
 	})) // grpc-gateway
 
 	grpcServer := grpc.NewServer(
-		grpc.UnaryInterceptor(otelgrpc.UnaryServerInterceptor()),   // instrumentation
-		grpc.StreamInterceptor(otelgrpc.StreamServerInterceptor()), // instrumentation
+		grpc.StatsHandler(otelgrpc.NewServerHandler()), // instrumentation
 	)
 
 	// Serve both the gRPC server and the http/json proxy on the same port
