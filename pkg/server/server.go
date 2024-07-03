@@ -109,7 +109,11 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 		r *http.Request,
 	) {
 		// Log the complete request URL
+		// Log the complete request URL and additional details
+		log.Printf("Request Method: %s", r.Method)
 		log.Printf("Request URL: %s", r.URL.String())
+		log.Printf("Request HTTP Version: %s", r.Proto)
+		log.Printf("Request Headers: %v", r.Header)
 		next.ServeHTTP(w, r)
 	})
 }
