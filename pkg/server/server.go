@@ -3,13 +3,13 @@ package server
 import (
 	"context"
 	"errors"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 	"google.golang.org/protobuf/encoding/protojson"
+	"log"
 	"net"
 	"net/http"
 	"strconv"
-
-	"golang.org/x/net/http2"
-	"golang.org/x/net/http2/h2c"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
@@ -62,14 +62,14 @@ func NewServer(config *ServerConfig) *Server {
 
 	// Serve both the gRPC server and the http/json proxy on the same port
 	httpServer := &http.Server{
-		Handler: h2c.NewHandler(
+		Handler: LoggingMiddleware(h2c.NewHandler(
 			config.HttpAndGrpcHandlerFunc(
 				grpcMux,
 				grpcServer,
 				config.HandlerOptions,
 			),
 			&http2.Server{},
-		),
+		)),
 	}
 
 	return &Server{
@@ -100,4 +100,16 @@ func (s *Server) Shutdown(ctx context.Context) error {
 		return s.HttpServer.Shutdown(ctx)
 	}
 	return nil
+}
+
+// LoggingMiddleware logs the incoming request URL
+func LoggingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(
+		w http.ResponseWriter,
+		r *http.Request,
+	) {
+		// Log the complete request URL
+		log.Printf("Request URL: %s", r.URL.String())
+		next.ServeHTTP(w, r)
+	})
 }
