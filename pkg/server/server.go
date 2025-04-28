@@ -46,8 +46,9 @@ func NewServer(config *ServerConfig) *Server {
 	grpcMux := runtime.NewServeMux() // grpc-gateway
 
 	grpcServer := grpc.NewServer(
-		grpc.UnaryInterceptor(otelgrpc.UnaryServerInterceptor()),   // instrumentation
-		grpc.StreamInterceptor(otelgrpc.StreamServerInterceptor()), // instrumentation
+		grpc.StatsHandler(
+			otelgrpc.NewServerHandler(),
+		),
 	)
 
 	// Serve both the gRPC server and the http/json proxy on the same port
