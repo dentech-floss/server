@@ -46,6 +46,7 @@ func CorsHttpAndGrpcHandlerFunc(
 		"X-Auth-Token",
 		"Traceparent",
 		"Baggage",
+		"Sentry-Trace",
 	}
 	if options != nil && options.AdditionalAllowedHeaders != nil {
 		allowedHeaders = append(allowedHeaders, options.AdditionalAllowedHeaders...)
