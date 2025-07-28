@@ -34,7 +34,9 @@ func (c *ServerConfig) setDefaults() {
 }
 
 type Server struct {
-	Port       int
+	Port int
+	// Actual port used by the server, useful for when the port is 0 (random port)
+	ActualPort int
 	GrpcMux    *runtime.ServeMux
 	GrpcServer *grpc.Server
 	HttpServer *http.Server
@@ -71,10 +73,38 @@ func NewServer(config *ServerConfig) *Server {
 	}
 }
 
+// Start starts the server asynchronously (non-blocking) and sets ActualPort.
+// Useful in tests where dynamic ports can be beneficial.
+func (s *Server) Start() error {
+	listener, err := net.Listen("tcp", ":"+strconv.Itoa(s.Port))
+	if err != nil {
+		return err
+	}
+
+	if tcpAddr, ok := listener.Addr().(*net.TCPAddr); ok {
+		s.ActualPort = tcpAddr.Port
+	}
+
+	go func() {
+		err := s.HttpServer.Serve(listener)
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
+			panic(err)
+		}
+	}()
+
+	return nil
+}
+
+// Serve starts the server synchronously (blocking), typically used in production.
+// Keeps compatibility with existing code.
 func (s *Server) Serve() {
 	listener, err := net.Listen("tcp", ":"+strconv.Itoa(s.Port))
 	if err != nil {
 		panic(err)
+	}
+
+	if tcpAddr, ok := listener.Addr().(*net.TCPAddr); ok {
+		s.ActualPort = tcpAddr.Port
 	}
 
 	err = s.HttpServer.Serve(listener)
