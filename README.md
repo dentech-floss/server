@@ -2,14 +2,14 @@
 
 Since we only have one port on Cloud Run, but want to serve both the "native" gRPC server and the [gRPC-Gateway](https://github.com/grpc-ecosystem/grpc-gateway) we have applied the ideas from here: [Serving gRPC+HTTP/2 from the same Cloud Run container](https://ahmet.im/blog/grpc-http-mux-go/) to get this to work.
 
-Opentelemetry instrumentation is configured for the gRPC server via the [otelgrpc](https://pkg.go.dev/go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc) lib to intercept both unary and stream communication. 
+Opentelemetry instrumentation is configured for the gRPC server via the [otelgrpc](https://pkg.go.dev/go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc) lib to intercept both unary and stream communication.
 
 Which handler to use is configurable, provide your implementation of choice by setting "HttpAndGrpcHandlerFunc" in the config. If this is not provided then the "DefaultHttpAndGrpcHandlerFunc" is used, and we also provide a "CorsHttpAndGrpcHandlerFunc" that handles preflight requests so have a closer look at: [handlers.go](https://github.com/dentech-floss/server/blob/master/pkg/server/handlers.go).
 
 ## Install
 
 ```
-go get github.com/dentech-floss/server@v0.2.10
+go get github.com/dentech-floss/server@v0.2.11
 ```
 
 ## Usage
