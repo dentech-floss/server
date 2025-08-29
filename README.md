@@ -9,7 +9,7 @@ Which handler to use is configurable, provide your implementation of choice by s
 ## Install
 
 ```
-go get github.com/dentech-floss/server@v0.2.11
+go get github.com/dentech-floss/server@v0.2.12
 ```
 
 ## Usage
