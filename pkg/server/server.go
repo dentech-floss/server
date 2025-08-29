@@ -84,7 +84,7 @@ func (s *Server) Serve() {
 }
 
 func (s *Server) Shutdown(ctx context.Context) error {
-	if s.GrpcServer != nil {
+	if s.GrpcServer != nil && s.HttpServer == nil { // shutdown only gRPC server if no HTTP server
 		s.GrpcServer.GracefulStop()
 	}
 	if s.HttpServer != nil {
