@@ -10,6 +10,7 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
+	"github.com/dentech-floss/server/pkg/realip"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 
@@ -48,6 +49,9 @@ func NewServer(config *ServerConfig) *Server {
 	grpcMux := runtime.NewServeMux() // grpc-gateway
 
 	grpcServer := grpc.NewServer(
+		grpc.UnaryInterceptor(
+			realip.UnaryServerInterceptor(),
+		),
 		grpc.StatsHandler(
 			otelgrpc.NewServerHandler(),
 		),
