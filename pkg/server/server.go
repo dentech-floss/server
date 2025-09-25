@@ -26,6 +26,7 @@ type ServerConfig struct {
 	Port                   int
 	HttpAndGrpcHandlerFunc HttpAndGrpcHandlerFunc
 	HandlerOptions         *HttpAndGrpcHandlerOptions
+	WithRealIP             bool
 }
 
 func (c *ServerConfig) setDefaults() {
@@ -48,14 +49,18 @@ func NewServer(config *ServerConfig) *Server {
 
 	grpcMux := runtime.NewServeMux() // grpc-gateway
 
-	grpcServer := grpc.NewServer(
-		grpc.UnaryInterceptor(
+	var opts []grpc.ServerOption
+	if config.WithRealIP {
+		opts = append(opts, grpc.UnaryInterceptor(
 			realip.UnaryServerInterceptor(),
-		),
-		grpc.StatsHandler(
-			otelgrpc.NewServerHandler(),
-		),
-	)
+		))
+	}
+
+	opts = append(opts, grpc.StatsHandler(
+		otelgrpc.NewServerHandler(),
+	))
+
+	grpcServer := grpc.NewServer(opts...)
 
 	// Serve both the gRPC server and the http/json proxy on the same port
 	httpServer := &http.Server{
