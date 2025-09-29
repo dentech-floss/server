@@ -9,7 +9,7 @@ Which handler to use is configurable, provide your implementation of choice by s
 ## Install
 
 ```
-go get github.com/dentech-floss/server@v0.2.12
+go get github.com/dentech-floss/server@v0.2.13
 ```
 
 ## Usage
@@ -37,6 +37,7 @@ func main() {
             Port: config.Port,
             // The "server.DefaultHttpAndGrpcHandlerFunc" will be used if you don't set this
             // HttpAndGrpcHandlerFunc: server.CorsHttpAndGrpcHandlerFunc // ...for cors...
+            // You can also add the WithRealIP option to enable getting the user's IP address via realip.FromContext.
         },
     )
 
