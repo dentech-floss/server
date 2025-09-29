@@ -10,6 +10,7 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
+	"github.com/dentech-floss/server/pkg/realip"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 
@@ -25,6 +26,7 @@ type ServerConfig struct {
 	Port                   int
 	HttpAndGrpcHandlerFunc HttpAndGrpcHandlerFunc
 	HandlerOptions         *HttpAndGrpcHandlerOptions
+	WithRealIP             bool
 }
 
 func (c *ServerConfig) setDefaults() {
@@ -47,11 +49,18 @@ func NewServer(config *ServerConfig) *Server {
 
 	grpcMux := runtime.NewServeMux() // grpc-gateway
 
-	grpcServer := grpc.NewServer(
-		grpc.StatsHandler(
-			otelgrpc.NewServerHandler(),
-		),
-	)
+	var opts []grpc.ServerOption
+	if config.WithRealIP {
+		opts = append(opts, grpc.UnaryInterceptor(
+			realip.UnaryServerInterceptor(),
+		))
+	}
+
+	opts = append(opts, grpc.StatsHandler(
+		otelgrpc.NewServerHandler(),
+	))
+
+	grpcServer := grpc.NewServer(opts...)
 
 	// Serve both the gRPC server and the http/json proxy on the same port
 	httpServer := &http.Server{
