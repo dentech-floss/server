@@ -3,10 +3,10 @@ module github.com/dentech-floss/server
 go 1.24.0
 
 require (
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.8
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.28.0
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.65.0
 	golang.org/x/net v0.49.0
-	google.golang.org/grpc v1.78.0
+	google.golang.org/grpc v1.79.1
 )
 
 require (
