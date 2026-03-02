@@ -5,7 +5,7 @@ go 1.26
 require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.28.0
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.65.0
-	golang.org/x/net v0.50.0
+	golang.org/x/net v0.51.0
 	google.golang.org/grpc v1.79.1
 )
 
