@@ -52,7 +52,7 @@ func NewServer(config *ServerConfig) *Server {
 
 	var opts []grpc.ServerOption
 	if config.WithRealIP {
-		opts = append(opts, grpc.UnaryInterceptor(
+		opts = append(opts, grpc.ChainUnaryInterceptor(
 			realip.UnaryServerInterceptor(),
 		))
 	}
