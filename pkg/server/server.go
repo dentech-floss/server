@@ -27,6 +27,7 @@ type ServerConfig struct {
 	HttpAndGrpcHandlerFunc HttpAndGrpcHandlerFunc
 	HandlerOptions         *HttpAndGrpcHandlerOptions
 	WithRealIP             bool
+	GrpcServerOptions      []grpc.ServerOption
 }
 
 func (c *ServerConfig) setDefaults() {
@@ -51,7 +52,7 @@ func NewServer(config *ServerConfig) *Server {
 
 	var opts []grpc.ServerOption
 	if config.WithRealIP {
-		opts = append(opts, grpc.UnaryInterceptor(
+		opts = append(opts, grpc.ChainUnaryInterceptor(
 			realip.UnaryServerInterceptor(),
 		))
 	}
@@ -59,6 +60,8 @@ func NewServer(config *ServerConfig) *Server {
 	opts = append(opts, grpc.StatsHandler(
 		otelgrpc.NewServerHandler(),
 	))
+
+	opts = append(opts, config.GrpcServerOptions...)
 
 	grpcServer := grpc.NewServer(opts...)
 
