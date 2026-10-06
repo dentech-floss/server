@@ -11,6 +11,7 @@ import (
 	"golang.org/x/net/http2/h2c"
 
 	"github.com/dentech-floss/server/pkg/realip"
+	"github.com/dentech-floss/server/pkg/requestlog"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 
@@ -27,7 +28,10 @@ type ServerConfig struct {
 	HttpAndGrpcHandlerFunc HttpAndGrpcHandlerFunc
 	HandlerOptions         *HttpAndGrpcHandlerOptions
 	WithRealIP             bool
-	GrpcServerOptions      []grpc.ServerOption
+	// WithRequestLogFields adds the "grpc.method" and "request" log fields to the
+	// context of every unary call. See the requestlog package.
+	WithRequestLogFields bool
+	GrpcServerOptions    []grpc.ServerOption
 }
 
 func (c *ServerConfig) setDefaults() {
@@ -54,6 +58,11 @@ func NewServer(config *ServerConfig) *Server {
 	if config.WithRealIP {
 		opts = append(opts, grpc.ChainUnaryInterceptor(
 			realip.UnaryServerInterceptor(),
+		))
+	}
+	if config.WithRequestLogFields {
+		opts = append(opts, grpc.ChainUnaryInterceptor(
+			requestlog.UnaryServerInterceptor(),
 		))
 	}
 
