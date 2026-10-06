@@ -38,6 +38,7 @@ func main() {
             // The "server.DefaultHttpAndGrpcHandlerFunc" will be used if you don't set this
             // HttpAndGrpcHandlerFunc: server.CorsHttpAndGrpcHandlerFunc // ...for cors...
             // You can also add the WithRealIP option to enable getting the user's IP address via realip.FromContext.
+            // WithRequestLogFields: true, // see "Request log fields" below
         },
     )
 
@@ -66,4 +67,38 @@ func handleShutdown(
         logger.Warn("Server shutdown failed: " + err.Error())
     }
 }
+```
+
+## Request log fields
+
+Set `WithRequestLogFields: true` to add two log fields to the context of every unary gRPC call:
+
+- `grpc.method`: the full method name, e.g. `/api.patient.v1.PatientGatewayService/FindTreatments`.
+- `request`: the request as JSON, when it's a protobuf message.
+
+Every entry logged with that context through a `*Context` method of a
+[dentech-floss/logging](https://github.com/dentech-floss/logging) logger includes them, also in helpers further
+down the call chain:
+
+```go
+func (s *PatientGatewayServiceV1) FindTreatments(
+    ctx context.Context,
+    request *patientv1.FindTreatmentsRequest,
+) (*patientv1.FindTreatmentsResponse, error) {
+    ...
+    // Includes grpc.method and request
+    s.logger.ErrorContext(ctx, "Find treatments failed", logging.Error(err))
+}
+```
+
+The request is logged with `logging.Proto`, which leaves out every field marked with `[debug_redact = true]` in the
+`.proto` schema and only serialises the request if something is actually logged. Before you turn this on, mark the
+sensitive fields in the schemas your service serves (personal data, health information, free text, secrets). See
+[Redacting sensitive fields](https://github.com/dentech-floss/logging#redacting-sensitive-fields) in the logging
+README.
+
+The interceptor is in the `requestlog` package if you build the gRPC server yourself:
+
+```go
+grpc.NewServer(grpc.ChainUnaryInterceptor(requestlog.UnaryServerInterceptor()))
 ```
